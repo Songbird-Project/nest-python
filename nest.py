@@ -1,6 +1,6 @@
 from dataclasses import asdict, dataclass
 from inspect import getsource
-from os import getenv, mkdir
+from os import getenv, mkdir, path
 from types import FunctionType
 from typing import Optional
 
@@ -15,6 +15,7 @@ class NestConfig:
 
 os_info = {}
 nest_gen_root = getenv("NEST_GEN_ROOT") or ""
+nest_autogen = nest_gen_root + "autogen/" if nest_gen_root else ""
 
 def newConfig() -> NestConfig:
     with open("/etc/os-release", "r") as os_release:
@@ -57,7 +58,8 @@ def __checkValue(key: str, value):
         return value
 
 def __generateBuildFiles(buildFunc: list[str], buildType: str):
-    mkdir(nest_gen_root)
+    if not path.exists(nest_autogen):
+        mkdir(nest_autogen)
 
-    with open(nest_gen_root + buildType + ".py", "w") as file:
+    with open(nest_autogen + buildType + ".py", "w") as file:
             file.writelines([buildFunc[0] + "\n", buildFunc[1] + "()"])
