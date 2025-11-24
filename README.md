@@ -1,4 +1,4 @@
-# nest-python
+# python-nest
 
 A Python module to interface with `nest` in a user friendly way, allowing full
 system control using simple options returned in an easy to parse way.
