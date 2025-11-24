@@ -58,7 +58,7 @@ def __checkValue(key: str, value):
         return value
 
 def __generateBuildFiles(buildFunc: list[str], buildType: str):
-    if not path.exists(nest_autogen):
+    if not path.exists(nest_autogen) and nest_autogen != "":
         mkdir(nest_autogen)
 
     with open(nest_autogen + buildType + ".py", "w") as file:
