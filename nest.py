@@ -1,13 +1,13 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from inspect import getsource
 from os import getenv, mkdir, path
 from types import FunctionType
-from typing import Optional
+from typing import List, Optional
 
 @dataclass
 class NestConfig:
     hostname: str
-    kernel: str = "linux"
+    kernels: List[str] = field(default_factory=list)
     bootloader: str = "limine"
     initramfsGenerator: str = "booster"
     preBuild: Optional[FunctionType] = None
@@ -29,6 +29,7 @@ def newConfig() -> NestConfig:
 
     config = NestConfig(
         hostname=os_info["id"],
+        kernels=["linux"]
     )
 
     return config
@@ -48,12 +49,14 @@ def returnConfig(config: NestConfig):
 def __checkValue(key: str, value):
     if key == "hostname":
         return str(value).replace(" ", "-")
-    if key == "preBuild" or key == "postBuild":
+    elif key == "preBuild" or key == "postBuild":
         if value != None:
             buildFunc = [getsource(value), value.__name__]
             __generateBuildFiles(buildFunc, key)
 
         return False
+    elif key == "kernels" and type(value) == list:
+        return str.join(",", value)
     else:
         return value
 
