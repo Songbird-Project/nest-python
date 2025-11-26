@@ -9,27 +9,24 @@ import ast
 
 
 @dataclass
-class LocaleGeneral:
-    lang: str = "en_US.UTF-8"
-    language: str = lang
-
-
-@dataclass
-class LocaleTime:
-    abday: str = "Sun;Mon;Tue;Wed;Thu;Fri;Sat"
-
-
-@dataclass
 class Locale:
-    localeGeneral: LocaleGeneral
-    localeTime: LocaleTime
+    lang: str = "en_US.UTF-8"
+    address: str = lang
+    identification: str = lang
+    measurement: str = lang
+    monetary: str = lang
+    name: str = lang
+    numeric: str = lang
+    paper: str = lang
+    telephone: str = lang
+    time: str = lang
 
 
 @dataclass
 class User:
-    homeDir: str = ""
+    userName: str = "user"
     fullName: str = ""
-    userName: str = ""
+    homeDir: str = ""
     manageHome: bool = False
     groups: List[str] = field(default_factory=list)
 
@@ -37,6 +34,7 @@ class User:
 @dataclass
 class SystemConfig:
     hostname: str
+    locale: Locale = field(default_factory=Locale)
     kernels: List[str] = field(default_factory=list)
     users: List[User] = field(default_factory=list)
     bootloader: str = "limine"
@@ -60,16 +58,19 @@ def newConfig() -> SystemConfig:
             value = value.strip("'\"")
             os_info[key.lower()] = value
 
-    config = SystemConfig(
-        hostname=os_info["id"],
-        kernels=["linux"],
-    )
+    config = SystemConfig(hostname=os_info["id"], kernels=["linux"])
 
     return config
 
 
 def returnConfig(config: SystemConfig):
     configDict = asdict(config)
+
+    if configDict["locale"]:
+        print("Generating locale config...", end=" ")
+        __generateLocaleConfig(config.locale)
+        configDict.pop("locale")
+        print("done")
 
     if configDict["users"]:
         print("Generating user config...", end=" ")
@@ -225,6 +226,26 @@ def __generateUserConfig(users: List[User]):
 
     with open(f"{nest_autogen}users.scsv", "w") as file:
         file.write(usersSCSV)
+
+
+def __generateLocaleConfig(config: Locale):
+    localeConf = f"""LANG={config.lang}
+LC_ADDRESS={config.address}
+LC_IDENTIFICATION={config.identification}
+LC_MEASUREMENT={config.measurement}
+LC_MONETARY={config.monetary}
+LC_NAME={config.name}
+LC_NUMERIC={config.numeric}
+LC_PAPER={config.paper}
+LC_TELEPHONE={config.telephone}
+LC_TIME={config.time}
+"""
+
+    if not path.exists(nest_autogen) and nest_autogen != "":
+        Path(nest_autogen).mkdir(parents=True)
+
+    with open(f"{nest_autogen}locale.conf", "w") as file:
+        file.write(localeConf)
 
 
 def __generateSystemConfig(configDict: dict):
