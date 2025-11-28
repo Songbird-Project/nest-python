@@ -70,6 +70,9 @@ def newConfig() -> SystemConfig:
 def returnConfig(config: SystemConfig):
     configDict = asdict(config)
 
+    if not path.exists(nest_autogen) and nest_autogen:
+        Path(nest_autogen).mkdir(parents=True)
+
     if configDict["locale"]:
         __generateLocaleConfig(config.locale)
         configDict.pop("locale")
@@ -173,9 +176,6 @@ def __generateBuildFiles(buildFunc: FunctionType, buildType: str):
     deps = module["imports"]
     functions = module["functions"]
 
-    if not path.exists(nest_autogen) and nest_autogen:
-        Path(nest_autogen).mkdir(parents=True)
-
     with open(f"{nest_autogen}{buildType}.py", "w") as file:
         if deps:
             for dep in sorted(deps):
@@ -215,9 +215,6 @@ def __generateUserConfig(users: List[User]):
 
 """
 
-    if not path.exists(nest_autogen) and nest_autogen:
-        Path(nest_autogen).mkdir(parents=True)
-
     with open(f"{nest_autogen}users.scsv", "w") as file:
         file.write(usersSCSV)
 
@@ -239,9 +236,6 @@ def __generateLocaleConfig(config: Locale):
 
     lcVars = "\n".join(f"LC_{key}={value}" for key, value in lcVars.items())
     localeConf = f"LANG={config.lang}\n{lcVars}"
-
-    if not path.exists(nest_autogen) and nest_autogen:
-        Path(nest_autogen).mkdir(parents=True)
 
     with open(f"{nest_autogen}locale.conf", "w") as file:
         file.write(localeConf)
@@ -271,9 +265,6 @@ def __generateSystemConfig(configDict: dict):
         if type(value) != str:
             return 4
         scsvConfig += f"{key},{value}\n"
-
-    if not path.exists(nest_autogen) and nest_autogen:
-        Path(nest_autogen).mkdir(parents=True)
 
     with open(f"{nest_autogen}config.scsv", "w") as file:
         file.write(scsvConfig)
