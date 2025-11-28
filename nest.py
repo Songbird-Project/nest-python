@@ -45,7 +45,6 @@ class SystemConfig:
 
 
 os_info = {}
-nest_gen_root = getenv("NEST_GEN_ROOT") or ""
 nest_autogen = getenv("NEST_AUTOGEN") or ""
 
 
