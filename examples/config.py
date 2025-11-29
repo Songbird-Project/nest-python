@@ -1,8 +1,10 @@
 import nest
+from os import path
 
 
 def genInfo():
-    with open(f"{nest.nest_autogen}genInfo.md", "w") as file:
+    print(nest.nest_autogen)
+    with open(path.join(nest.nest_autogen, "genInfo.md"), "w") as file:
         file.write("Hello")
 
 
