@@ -73,22 +73,32 @@ def returnConfig(config: SystemConfig):
         Path(nest_autogen).mkdir(parents=True)
 
     if configDict["locale"]:
+        print("Generating locale config...", end=" ")
         __generateLocaleConfig(config.locale)
         configDict.pop("locale")
+        print("done")
 
     if configDict["users"]:
+        print("Generating user config...", end=" ")
         __generateUserConfig(config.users)
         configDict.pop("users")
+        print("done")
 
     if configDict["preBuild"]:
+        print("Generating preBuild...", end=" ")
         __generateBuildFiles(configDict["preBuild"], "preBuild")
         configDict.pop("preBuild")
+        print("done")
 
     if configDict["postBuild"]:
+        print("Generating postBuild...", end=" ")
         __generateBuildFiles(configDict["postBuild"], "postBuild")
         configDict.pop("postBuild")
+        print("done")
 
+    print("Generating system config...", end=" ")
     __generateSystemConfig(configDict)
+    print("done")
 
 
 def __checkValue(key: str, value):
